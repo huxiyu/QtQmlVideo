@@ -22,7 +22,7 @@ HEADERS += \
 
     INCLUDEPATH += "D:/gitrep/github/QtQmlVideo/Lib/glew-1.9.0/include"
     LIBS += D:/gitrep/github/QtQmlVideo/Lib/glew-1.9.0/lib/glew32.lib
-    INCLUDEPATH += "D:/Test/Lib/VLC/sdk/include"
+    INCLUDEPATH += "D:/gitrep/github/QtQmlVideo/Lib/VLC/sdk/include"
     LIBS += D:/gitrep/github/QtQmlVideo/Lib/VLC/sdk/lib/libvlccore.lib
     LIBS += D:/gitrep/github/QtQmlVideo/Lib/VLC/sdk/lib/libvlc.lib
 

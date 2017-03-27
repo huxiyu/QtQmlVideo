@@ -3,12 +3,13 @@
 #include <GL/glew.h>
 //#include <qgl.h>
 #include <QTimer>
+#include <vlc/vlc.h>
 
 #include <QDebug>
 
 QmlVideo::QmlVideo(QQuickItem *parent)
     :QQuickPaintedItem(parent),
-    m_state(Stopped)
+      m_state(Stopped)
 {
     setRenderTarget(QQuickPaintedItem::FramebufferObject);
     GLenum err = glewInit();
@@ -28,6 +29,16 @@ QmlVideo::QmlVideo(QQuickItem *parent)
     m_frameTimer = new QTimer(this);
     QObject::connect(m_frameTimer, SIGNAL(timeout()), this, SLOT(frame()));
     m_frameTimer->setInterval(33);
+
+    libvlc_instance_t *libvlc;
+    const char *argv[] =
+    {
+        "--no-audio", /* skip any audio track */
+        "--no-xlib", /* tell VLC to not use Xlib */
+    };
+    int argc = sizeof(argv) / sizeof(*argv);
+    qDebug() << argc;
+    libvlc = libvlc_new(argc,argv);
 }
 
 QmlVideo::~QmlVideo(){
