@@ -8,8 +8,8 @@ Window {
     height: 600;
 
     Rectangle {
-        width: 360
-        height: 360
+        width: 600
+        height: 600
         x: 0
         y: 0
         border.width: 5; border.color: "blue";
@@ -21,7 +21,26 @@ Window {
             Component.onCompleted: {
             }
         }
+    }
+
+    Rectangle {
+        width: 220;
+        height: 220;
+        anchors.top: parent.top;
+        anchors.right: parent.right;
+        color:"transparent";
+
+        AnimatedImage {
+            id: animated;
+            anchors.fill: parent;
+            source: "1.gif"
+//            onCurrentFrameChanged: {
+//                //                info.text = "%1/%2".arg(animated.currentFrame).arg(animated.frameCount);
+//            }
+        }
 
     }
+
+
 
 }
