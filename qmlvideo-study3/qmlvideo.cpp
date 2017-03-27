@@ -7,7 +7,8 @@
 #include <QDebug>
 
 QmlVideo::QmlVideo(QQuickItem *parent)
-    :QQuickPaintedItem(parent)
+    :QQuickPaintedItem(parent),
+    m_state(Stopped)
 {
     setRenderTarget(QQuickPaintedItem::FramebufferObject);
     GLenum err = glewInit();

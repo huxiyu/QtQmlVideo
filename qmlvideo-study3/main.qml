@@ -21,6 +21,13 @@ Window {
             Component.onCompleted: {
             }
         }
+
+        MouseArea {
+            anchors.fill: parent;
+            onClicked: {
+                video.playPause();
+            }
+        }
     }
 
     Rectangle {
