@@ -3,16 +3,25 @@
 
 #include <QtQuick/QQuickPaintedItem>
 #include <QMutex>
+#include <GL/glew.h>
+#include <QOpenGLFunctions>
 
 struct libvlc_instance_t;
 struct libvlc_media_player_t;
 
-class QmlVideo : public QQuickPaintedItem
+class QmlVideo : public QQuickPaintedItem//, protected QOpenGLFunctions
 {
     Q_OBJECT
     Q_ENUMS(State);
     Q_PROPERTY(State state READ state WRITE setState);
     Q_PROPERTY(QString fileName READ fileName WRITE setFileName);
+
+    enum PaintMode
+    {
+        PaintModeQPainter,
+        PaintModeTexture,
+        PaintModePBO
+    };
 
 public:
     enum State
@@ -52,23 +61,29 @@ protected slots:
 
 private:
     //VLC callback functions
-    static unsigned int vlcVideoFormatCallback(void **object, char *chroma, unsigned int *width, unsigned int *height,
-                               unsigned int *pitches, unsigned int *lines);
-    static void *vlcVideoLockCallBack(void *object, void **planes);
-    static void vlcVideoUnlockCallback(void *object, void *picture, void * const *planes);
-    static void vlcVideoDisplayCallback(void *object, void *picture);
+       static unsigned int vlcVideoFormatCallback(void **object, char *chroma, unsigned int *width, unsigned int *height,
+                                  unsigned int *pitches, unsigned int *lines);
+       static void *vlcVideoLockCallBack(void *object, void **planes);
+       static void vlcVideoUnlockCallback(void *object, void *picture, void * const *planes);
+       static void vlcVideoDisplayCallback(void *object, void *picture);
 
-    //Video Properties
-    QString m_fileName;
-    quint32 m_width;
-    quint32 m_height;
+       //Video Properties
+       QString m_fileName;
+       quint32 m_width;
+       quint32 m_height;
 
-    //State and buffer variables
-    State m_state;
-    char *m_pixelBuff;
-    QMutex *m_pixelMutex;
-    libvlc_instance_t *m_libVlc;
-    libvlc_media_player_t *m_mediaPlayer;
+       //State and buffer variables
+       State m_state;
+       char *m_pixelBuff;
+       QMutex *m_pixelMutex;
+       libvlc_instance_t *m_libVlc;
+       libvlc_media_player_t *m_mediaPlayer;
+       PaintMode m_paintMode;
+       quint32 m_textureId;
+       quint32 m_pbo1;
+       quint32 m_pbo2;
+
+       bool m_paintModeFlag = true;
 };
 
 #endif // QMLVIDEO_H

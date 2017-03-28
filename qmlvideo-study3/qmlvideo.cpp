@@ -6,33 +6,29 @@
 #include <QMutexLocker>
 #include <QImage>
 #include <vlc/vlc.h>
+#include <QOpenGLContext>
 
 #include <QDebug>
 
+#ifndef GL_BGR
+#define GL_BGR 0x80E0
+#endif
+
 QmlVideo::QmlVideo(QQuickItem *parent)
     :QQuickPaintedItem(parent),
-      m_state(Stopped)
+      m_state(Stopped),
+      m_paintMode(PaintModeTexture)
 {
     setRenderTarget(QQuickPaintedItem::FramebufferObject);
-//    GLenum err = glewInit();
-//    if (GLEW_OK != err)
-//    {
-//    }
-//    else
-//    {
-//        if(GLEW_EXT_pixel_buffer_object)
-//        {
-//        }
-//        else
-//        {
-//        }
-//    }
+
 
     //Initialize the VLC library;
     const char *argv[] =
     {
-//        "--no-audio", /* skip any audio track */
+        "--no-audio", /* skip any audio track */
         "--no-xlib", /* tell VLC to not use Xlib */
+        "--no-video-title-show"
+        //        "--network-caching=500"
     };
     int argc = sizeof(argv) / sizeof(*argv);
     m_libVlc = libvlc_new(argc,argv);
@@ -43,8 +39,118 @@ QmlVideo::~QmlVideo(){
 
 void QmlVideo::paint(QPainter* p)
 {
-    QImage img((uchar *)m_pixelBuff, m_width, m_height, QImage::Format_RGB888);
-    p->drawImage(boundingRect(), img.rgbSwapped(), QRect(0,0,m_width, m_height));
+    if (m_paintModeFlag)
+    {
+        glewExperimental = GL_TRUE;
+        GLenum err = glewInit();
+        if (GLEW_OK != err)
+        {
+            qDebug("error %s", glewGetErrorString(err));
+            m_paintMode = PaintModeQPainter;
+        }
+        else
+        {
+            if(GLEW_EXT_pixel_buffer_object)
+            {
+                qDebug() << "GLEW_EXT_pixel_buffer_object: PaintModePBO";
+                m_paintMode = PaintModePBO;
+            }
+            else
+            {
+                qDebug() << "GLEW_EXT_pixel_buffer_object: PaintModeTexture";
+                m_paintMode = PaintModeTexture;
+            }
+        }
+        qDebug("GLEW_VERSION %s", glewGetString(GLEW_VERSION));
+        m_paintModeFlag = false;
+    }
+
+
+    switch(m_paintMode)
+    {
+    case PaintModeQPainter:
+    {
+        QImage img((uchar *)m_pixelBuff, m_width, m_height, QImage::Format_RGB888);
+        p->drawImage(boundingRect(), img.rgbSwapped(), QRect(0,0,m_width, m_height));
+    }
+        break;
+    case PaintModeTexture:
+    {
+        glBindTexture(GL_TEXTURE_2D, m_textureId);
+        glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+        glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+        glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+        glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_DECAL);
+
+
+        glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, m_width, m_height, 0, GL_BGR_EXT, GL_UNSIGNED_BYTE, m_pixelBuff);
+        glBindTexture(GL_TEXTURE_2D, 0);
+
+
+        p->beginNativePainting();
+        //        qDebug() << "Paint...";
+
+        QRectF rect = boundingRect();
+
+//        glEnable(GL_TEXTURE_2D);
+//        glBindTexture(GL_TEXTURE_2D, m_textureId);
+
+//        glBegin(GL_QUADS);
+//        //        glColor3f(1.0f,0.0f,0.0f);
+//        glTexCoord2d(0.0,0.0); glVertex2d(-1.0f, -1.0f);
+//        glTexCoord2d(0.0,1.0); glVertex2d(-1.0f, 1.0f);
+//        glTexCoord2d(1.0,1.0); glVertex2d(1.0f, 1.0f);
+//        glTexCoord2d(1.0,0.0); glVertex2d(1.0f, -1.0f);
+//        glEnd();
+
+//        glBindTexture(GL_TEXTURE_2D, 0);
+//        glDisable(GL_TEXTURE_2D);
+
+
+        glEnable(GL_TEXTURE_2D);
+        glBindTexture(GL_TEXTURE_2D, m_textureId);
+
+        glBegin(GL_QUADS);
+        glTexCoord2d(0.0,0.0); glVertex2d(-1.0f, -1.0f);
+        glTexCoord2d(0.0,1.0); glVertex2d(-1.0f, 0.0f);
+        glTexCoord2d(1.0,1.0); glVertex2d(0.0f, 0.0f);
+        glTexCoord2d(1.0,0.0); glVertex2d(0.0f, -1.0f);
+        glEnd();
+
+        glBegin(GL_QUADS);
+        glTexCoord2d(0.0,0.0); glVertex2d(0.0f, -1.0f);
+        glTexCoord2d(0.0,1.0); glVertex2d(0.0f, 0.0f);
+        glTexCoord2d(1.0,1.0); glVertex2d(1.0f, 0.0f);
+        glTexCoord2d(1.0,0.0); glVertex2d(1.0f, -1.0f);
+        glEnd();
+
+        glBegin(GL_QUADS);
+        glTexCoord2d(0.0,0.0); glVertex2d(-1.0f, 0.0f);
+        glTexCoord2d(0.0,1.0); glVertex2d(-1.0f, 1.0f);
+        glTexCoord2d(1.0,1.0); glVertex2d(0.0f, 1.0f);
+        glTexCoord2d(1.0,0.0); glVertex2d(0.0f, 0.0f);
+        glEnd();
+
+        glBegin(GL_QUADS);
+        glTexCoord2d(0.0,0.0); glVertex2d(0.0f, 0.0f);
+        glTexCoord2d(0.0,1.0); glVertex2d(0.0f, 1.0f);
+        glTexCoord2d(1.0,1.0); glVertex2d(1.0f, 1.0f);
+        glTexCoord2d(1.0,0.0); glVertex2d(1.0f, 0.0f);
+        glEnd();
+
+        glBindTexture(GL_TEXTURE_2D, 0);
+        glDisable(GL_TEXTURE_2D);
+
+        p->endNativePainting();
+    }
+        break;
+    case PaintModePBO:
+        break;
+    }
+
+
     /*
     p->beginNativePainting();
 
@@ -173,8 +279,9 @@ void QmlVideo::paintFrame()
     update();
 }
 
+
 unsigned int QmlVideo::vlcVideoFormatCallback(void **object, char *chroma, unsigned int *width, unsigned int *height,
-                           unsigned int *pitches, unsigned int *lines)
+                                              unsigned int *pitches, unsigned int *lines)
 {
     unsigned int retval = 0;
     QmlVideo *instance = (QmlVideo *)*object;
@@ -188,7 +295,7 @@ void *QmlVideo::vlcVideoLockCallBack(void *object, void **planes)
 {
     //Lock the pixel mutex, and hand the pixel buffer to VLC
     QmlVideo *instance = (QmlVideo *)object;
-//    QMutexLocker((instance->m_pixelMutex));
+    //    QMutexLocker((instance->m_pixelMutex));
     *planes = (void *)instance->m_pixelBuff;
     return NULL;
 }
@@ -209,19 +316,91 @@ void QmlVideo::vlcVideoDisplayCallback(void *object, void *picture)
 
 quint32 QmlVideo::setupFormat(char *chroma, unsigned int *width, unsigned int *height, unsigned int *pitches, unsigned int *lines)
 {
+
     qDebug() << "Got format request:" << chroma << *width << *height;
+
+    //    glewExperimental = GL_TRUE;
+    //    GLenum err = glewInit();
+    //    if (GLEW_OK != err)
+    //    {
+    //        qDebug("error %s", glewGetErrorString(err));
+    //        m_paintMode = PaintModeQPainter;
+    //    }
+    //    else
+    //    {
+    //        if(GLEW_EXT_pixel_buffer_object)
+    //        {
+    //            qDebug() << "GLEW_EXT_pixel_buffer_object: PaintModePBO";
+    //            m_paintMode = PaintModePBO;
+    //        }
+    //        else
+    //        {
+    //            qDebug() << "GLEW_EXT_pixel_buffer_object: PaintModeTexture";
+    //            m_paintMode = PaintModeTexture;
+    //        }
+    //    }
+    //    qDebug("GLEW_VERSION %s", glewGetString(GLEW_VERSION));
+
+
     strcpy(chroma, "RV24");
     pitches[0] = *width * 3;
     lines[0] = *height * 3;
-    m_pixelBuff = (char *)malloc((*width)*(*height)*3);
     m_width = *width;
     m_height = *height;
+
+    switch(m_paintMode)
+    {
+    case PaintModeQPainter:
+        m_pixelBuff = (char *)malloc((*width)*(*height)*3);
+        break;
+    case PaintModeTexture:
+        m_pixelBuff = (char *)malloc((*width)*(*height)*3);
+        glGenTextures(1, &m_textureId);
+
+        //        glBindTexture(GL_TEXTURE_2D, m_textureId);
+        //        glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+        //        glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+        //        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+        //        glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+        //        glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_DECAL);
+        //        glBindTexture(GL_TEXTURE_2D, 0);
+        break;
+    case PaintModePBO:
+        glGenTextures(1, &m_textureId);
+        glBindTexture(GL_TEXTURE_2D, m_textureId);
+        glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+        glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+        glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+        glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_DECAL);
+        glBindTexture(GL_TEXTURE_2D, 0);
+
+        //        glGenBuffers(1, &m_pbo1);
+        //        glGenBuffers(1, &m_pbo2);
+        break;
+    }
+
     return(1);
 }
 
 void QmlVideo::updateTexture(void *picture, void * const *planes)
 {
-
+    switch(m_paintMode)
+    {
+    case PaintModeQPainter:
+        break;
+    case PaintModeTexture: {
+        //        qDebug() << "Decode";
+        //        glBindTexture(GL_TEXTURE_2D, m_textureId);
+        //        glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+        //        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, m_width, m_height, 0, GL_BGR_EXT, GL_UNSIGNED_BYTE, m_pixelBuff);
+        //        glBindTexture(GL_TEXTURE_2D, 0);
+    }
+        break;
+    case PaintModePBO:
+        break;
+    }
 }
+
 
 

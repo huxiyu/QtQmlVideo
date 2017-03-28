@@ -27,6 +27,8 @@ HEADERS += \
     LIBS += D:/gitrep/github/QtQmlVideo/Lib/VLC/sdk/lib/libvlc.lib
 
     LIBS += opengl32.lib
+    LIBS += glu32.lib
+
 
 
 
