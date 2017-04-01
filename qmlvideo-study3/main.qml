@@ -39,21 +39,34 @@ Window {
             Video {
                 id: video1;
                 anchors.fill: parent;
-                //            fileName: "D:\\Test\\video\\wildlife.wmv";
+                //                            fileName: "D:\\Test\\video\\wildlife.wmv";
                 //            fileName: "D:\\Test\\video\\testfile.mp4";
                 //            fileName: "D:\\Test\\video\\akiyo_qcif.yuv";
                 //            fileName: "D:\\Test\\video\\video.mp4";
                 fileName: "D:\\Test\\video\\192.168.100.26_01_0_20170328_105837_1.mp4";
-                Component.onCompleted: {
-                }
+                state: Video.Stopped;
+
                 MouseArea {
                     anchors.fill: parent;
+                    acceptedButtons: Qt.LeftButton | Qt.RightButton
                     onClicked: {
-                        video1.playPause();
+                        //                        video1.setState(Video.Playing)
+                        if(mouse.button == Qt.LeftButton)
+                        {
+                            console.log("pause")
+                            parent.pause();
+                        }
+                        else
+                        {
+                            console.log("play")
+                            parent.stop();
+                            parent.play();
+                        }
                     }
                 }
             }
         }
+
 
         Rectangle {
             width: rect.width / 2;
@@ -71,12 +84,24 @@ Window {
 //                fileName: "D:\\Test\\video\\akiyo_qcif.yuv";
                 //                fileName: "D:\\Test\\video\\video.mp4";
                 fileName: "D:\\Test\\video\\192.168.100.26_01_0_20170328_105837_1.mp4";
-                Component.onCompleted: {
-                }
+                state: Video.Stopped;
+
                 MouseArea {
                     anchors.fill: parent;
+                    acceptedButtons: Qt.LeftButton | Qt.RightButton
                     onClicked: {
-                        video2.playPause();
+                        //                        video1.setState(Video.Playing)
+                        if(mouse.button == Qt.LeftButton)
+                        {
+                            console.log("pause")
+                            parent.pause();
+                        }
+                        else
+                        {
+                            console.log("play")
+                            parent.stop();
+                            parent.play();
+                        }
                     }
                 }
             }
@@ -98,12 +123,24 @@ Window {
 //                fileName: "D:\\Test\\video\\akiyo_qcif.yuv";
                 //                fileName: "D:\\Test\\video\\video.mp4";
                 fileName: "D:\\Test\\video\\192.168.100.26_01_0_20170328_105837_1.mp4";
-                Component.onCompleted: {
-                }
+                state: Video.Stopped;
+
                 MouseArea {
                     anchors.fill: parent;
+                    acceptedButtons: Qt.LeftButton | Qt.RightButton
                     onClicked: {
-                        video3.playPause();
+                        //                        video1.setState(Video.Playing)
+                        if(mouse.button == Qt.LeftButton)
+                        {
+                            console.log("pause")
+                            parent.pause();
+                        }
+                        else
+                        {
+                            console.log("play")
+                            parent.stop();
+                            parent.play();
+                        }
                     }
                 }
             }
@@ -125,34 +162,43 @@ Window {
 //                fileName: "D:\\Test\\video\\akiyo_qcif.yuv";
                 //                fileName: "D:\\Test\\video\\video.mp4";
                 fileName: "D:\\Test\\video\\192.168.100.26_01_0_20170328_105837_1.mp4";
-                Component.onCompleted: {
-                }
+                state: Video.Stopped;
+
                 MouseArea {
                     anchors.fill: parent;
+                    acceptedButtons: Qt.LeftButton | Qt.RightButton
                     onClicked: {
-                        video4.playPause();
+                        //                        video1.setState(Video.Playing)
+                        if(mouse.button == Qt.LeftButton)
+                        {
+                            console.log("pause")
+                            parent.pause();
+                        }
+                        else
+                        {
+                            console.log("play")
+                            parent.stop();
+                            parent.play();
+                        }
                     }
                 }
             }
         }
-
-
-
     }
 
-    //    Rectangle {
-    //        width: 220;
-    //        height: 220;
-    //        anchors.bottom: parent.bottom;
-    //        anchors.right: parent.right;
-    //        color:"transparent";
+//        Rectangle {
+//            width: 220;
+//            height: 220;
+//            anchors.bottom: parent.bottom;
+//            anchors.right: parent.right;
+//            color:"transparent";
 
-    //        AnimatedImage {
-    //            id: animated;
-    //            anchors.fill: parent;
-    //            source: "1.gif"
-    //        }
-    //    }
+//            AnimatedImage {
+//                id: animated;
+//                anchors.fill: parent;
+//                source: "1.gif"
+//            }
+//        }
 
 
 
