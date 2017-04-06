@@ -20,19 +20,28 @@ Window {
             id: video
             anchors.margins: 10;
             anchors.fill: parent;
-            fileName: "D:\\Test\\video\\wildlife.wmv";
+//            fileName: "D:\\Test\\video\\wildlife.wmv";
 //            fileName: "D:\\Test\\video\\testfile.mp4";
 //            fileName: "D:\\Test\\video\\akiyo_qcif.yuv";
 //            fileName: "D:\\Test\\video\\video.mp4";
-//            fileName: "D:\\Test\\video\\192.168.100.26_01_0_20170328_105837_1.mp4";
+            fileName: "D:\\Test\\video\\192.168.100.26_01_0_20170328_105837_1.mp4";
             Component.onCompleted: {
             }
         }
 
         MouseArea {
             anchors.fill: parent;
+            acceptedButtons: Qt.LeftButton | Qt.RightButton
             onClicked: {
-                video.playPause();
+                if(mouse.button == Qt.LeftButton)
+                {
+                    console.log("LeftButton");
+                    video.playPause();
+                } else {
+                    console.log("RightButton");
+                    video.pause();
+                    video.stop();
+                }
             }
         }
     }
