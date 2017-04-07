@@ -20,13 +20,13 @@ HEADERS += \
     qmlvideo.h
 
 
-    INCLUDEPATH += "D:/gitrep/github/QtQmlVideo/Lib/glew-1.9.0/include"
-    LIBS += D:/gitrep/github/QtQmlVideo/Lib/glew-1.9.0/lib/glew32.lib
     INCLUDEPATH += "D:/gitrep/github/QtQmlVideo/Lib/VLC/sdk/include"
-    LIBS += D:/gitrep/github/QtQmlVideo/Lib/VLC/sdk/lib/libvlccore.lib
-    LIBS += D:/gitrep/github/QtQmlVideo/Lib/VLC/sdk/lib/libvlc.lib
+    LIBS += -LD:/gitrep/github/QtQmlVideo/Lib/VLC/sdk/lib/ -llibvlccore -llibvlc
 
-    LIBS += opengl32.lib
+
+#    INCLUDEPATH += "D:/gitrep/github/QtQmlVideo/Lib/glew-1.9.0/include"
+#    LIBS += D:/gitrep/github/QtQmlVideo/Lib/glew-1.9.0/lib/glew32.lib
+#    LIBS += opengl32.lib
 
 
 

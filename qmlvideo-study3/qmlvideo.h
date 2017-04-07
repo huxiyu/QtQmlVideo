@@ -17,9 +17,9 @@ class QmlVideo : public QQuickPaintedItem
 public:
     enum State
     {
-        Stopped,
-        Playing,
-        Paused
+        Stopped =0,
+        Playing = 1,
+        Paused = 2
     };
 
     explicit QmlVideo(QQuickItem *parent = 0);
@@ -30,6 +30,7 @@ public:
     Q_INVOKABLE State state();
     Q_INVOKABLE QString fileName();
     Q_INVOKABLE void setFileName(const QString &fileName);
+    Q_INVOKABLE void qmlVideoUpdate();
 
 signals:
     void stateChanged(State state);
@@ -69,6 +70,8 @@ private:
     QMutex *m_pixelMutex;
     libvlc_instance_t *m_libVlc;
     libvlc_media_player_t *m_mediaPlayer;
+
+    quint32 m_textureId;
 };
 
 #endif // QMLVIDEO_H
