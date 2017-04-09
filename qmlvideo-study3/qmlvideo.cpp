@@ -14,7 +14,8 @@ QmlVideo::QmlVideo(QQuickItem *parent)
       m_state(Stopped)
 {
     // 设置 绘制方式
-    //    setRenderTarget(QQuickPaintedItem::FramebufferObject);
+    //        setRenderTarget(QQuickPaintedItem::FramebufferObject);
+    //        setRenderTarget(QQuickPaintedItem::Image);
 
     m_pixelBuff = NULL;
     m_fileName = QString::null;
@@ -23,10 +24,48 @@ QmlVideo::QmlVideo(QQuickItem *parent)
     //Initialize the VLC library;
     const char *argv[] =
     {
-        "--no-audio", /* skip any audio track */
-        "--no-xlib", /* tell VLC to not use Xlib */
+        // skip any audio track
+        "--no-audio",
+
+        // tell VLC to not use Xlib
+        "--no-xlib",
+
+        // 在视频上显示媒体标题 (默认开启): --video-title-show, --no-video-title-show
         "--no-video-title-show",
-        "--network-caching=500",
+
+        // 首选视频分辨率: --preferred-resolution={-1 (最佳可用), 1080 (Full HD (1080p)), 720 (HD (720p)), 576 (标清 (576 或 480 行)), 320 (低清 (320 行))}
+        "--preferred-resolution=720",
+
+        // 性能选项: 增加进程的优先级 (默认关闭)--high-priority, --no-high-priority
+        // 增加进程优先级非常适合用于改进您的播放体验并时,VLC 不扰乱其它应用程序，但是它将占用更多的处理器您的机器才能还原。 (默认关闭)
+        "--high-priority",
+
+        // 使用硬件 YUV->RGB 转换 (默认开启)
+        "--directx-hw-yuv",
+
+        // 在系统内存中使用系统缓存(默认关闭)--directx-use-sysmem, --no-directx-use-sysmem
+        "--directx-use-sysmem",
+
+        // 线程数量:用于转码的线程数量。<整数 [-2147483648 .. 2147483647]>
+        "--sout-transcode-threads=12",
+
+        // 在输出优先级上运行可选的编码器线程代替视频。:高优先级 (默认关闭) --sout-transcode-high-priority, --no-sout-transcode-high-priority
+        "--no-sout-transcode-high-priority",
+
+        // 使用 RTP over RTSP (TCP) (默认关闭)
+        "--rtsp-tcp",
+
+        // RTSP 用户名
+        "--rtsp-user=admin",
+
+        // RTSP 密码
+        "--rtsp-pwd=12345",
+
+        //  RTSP 服务器端口 RTSP 服务器将监听该 TCP 端口。标准 RTSP 端口为554。然而 1025 以内端口的分配通常受操作系统限制。
+        "--rtsp-port=554",
+
+        // 界面交互 (默认开启): --interact, --no-interact
+        "--no-interact",
     };
     int argc = sizeof(argv) / sizeof(*argv);
     m_libVlc = libvlc_new(argc,argv);
@@ -130,8 +169,8 @@ QmlVideo::State QmlVideo::state()
 
 void QmlVideo::play(const QString &fileName)
 {
-//    if(m_fileName.isNull())
-        setFileName(fileName);
+    //    if(m_fileName.isNull())
+    setFileName(fileName);
 
     setState(Playing);
 }
@@ -206,7 +245,8 @@ void QmlVideo::setFileName(const QString &fileName)
     m_fileName = fileName;
 
     libvlc_media_t *m;
-    m = libvlc_media_new_path(m_libVlc, qPrintable(fileName));
+    //    m = libvlc_media_new_path(m_libVlc, qPrintable(fileName));
+    m = libvlc_media_new_location(m_libVlc, qPrintable(fileName));
     m_mediaPlayer = libvlc_media_player_new_from_media(m);
     libvlc_media_release(m);
 
@@ -221,7 +261,7 @@ void QmlVideo::paintFrame()
 }
 
 void QmlVideo::qmlVideoUpdate() {
-//    update();
+    //    update();
 }
 
 
@@ -240,7 +280,7 @@ void *QmlVideo::vlcVideoLockCallBack(void *object, void **planes)
 {
     //Lock the pixel mutex, and hand the pixel buffer to VLC
     QmlVideo *instance = (QmlVideo *)object;
-//        QMutexLocker((instance->m_pixelMutex));
+    //        QMutexLocker((instance->m_pixelMutex));
     *planes = (void *)instance->m_pixelBuff;
     return NULL;
 

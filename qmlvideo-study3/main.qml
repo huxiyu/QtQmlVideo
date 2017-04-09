@@ -4,11 +4,13 @@ import QtQuick.Window 2.2
 import QtQuick.Controls 1.4
 
 Window {
+    id: win
     visible: true;
     width: 1024;
     height: 600;
 
     Rectangle {
+        id: rect1;
         width: parent.width / 2;
         height: parent.height / 2;
         anchors.top: parent.top;
@@ -35,7 +37,8 @@ Window {
                 anchors.leftMargin: 10
                 width: 400
                 placeholderText: qsTr("Enter path")
-                text: "D:\\Test\\video\\192.168.100.26_01_0_20170328_105837_1.mp4"
+//                text: "file:///D:\\Test\\video\\192.168.100.26_01_0_20170328_105837_1.mp4"
+                text: "http://www.w3school.com.cn/i/movie.ogg";
             }
 
             Button{
@@ -51,11 +54,11 @@ Window {
                     // 获取播放状态
                     console.log("state = " + parent.state + " " + Video.Stopped)
 
-                    //            fileName: "D:\\Test\\video\\wildlife.wmv";
-                    //            fileName: "D:\\Test\\video\\testfile.mp4";
-                    //            fileName: "D:\\Test\\video\\akiyo_qcif.yuv";
-                    //            fileName: "D:\\Test\\video\\video.mp4";
-                    //            fileName: "D:\\Test\\video\\192.168.100.26_01_0_20170328_105837_1.mp4";
+                    //            fileName: "file:///D:\\Test\\video\\wildlife.wmv";
+                    //            fileName: "file:///D:\\Test\\video\\testfile.mp4";
+                    //            fileName: "file:///D:\\Test\\video\\akiyo_qcif.yuv";
+                    //            fileName: "file:///D:\\Test\\video\\video.mp4";
+                    //            fileName: "file:///D:\\Test\\video\\192.168.100.26_01_0_20170328_105837_1.mp4";
                     // 使用URL直接播放
                     parent.play(videoUrl1.text);
 
@@ -100,6 +103,7 @@ Window {
                     pause1.text = "暂停"
                 }
             }
+
         }
     }
 
@@ -123,7 +127,7 @@ Window {
                 anchors.leftMargin: 10
                 width: 400
                 placeholderText: qsTr("Enter path")
-                text: "D:\\Test\\video\\192.168.100.26_01_0_20170328_105837_1.mp4"
+                text: "file:///D:\\Test\\video\\192.168.100.26_01_0_20170328_105837_1.mp4"
             }
 
             Button{
@@ -204,7 +208,7 @@ Window {
                 anchors.leftMargin: 10
                 width: 400
                 placeholderText: qsTr("Enter path")
-                text: "D:\\Test\\video\\192.168.100.26_01_0_20170328_105837_1.mp4"
+                text: "file:///D:\\Test\\video\\192.168.100.26_01_0_20170328_105837_1.mp4"
             }
 
             Button{
@@ -220,7 +224,7 @@ Window {
                     // 获取播放状态
                     console.log("state = " + parent.state + " " + Video.Stopped)
 
-                    var fileName = "D:\\Test\\video\\192.168.100.26_01_0_20170328_105837_1.mp4";
+                    var fileName = "file:///D:\\Test\\video\\192.168.100.26_01_0_20170328_105837_1.mp4";
                     // 使用URL直接播放
                     parent.play(videoUrl3.text);
 
@@ -269,6 +273,7 @@ Window {
 
 
     Rectangle {
+        id: rect4;
         width: parent.width / 2;
         height: parent.height / 2;
         anchors.bottom: parent.bottom;
@@ -286,7 +291,7 @@ Window {
                 anchors.leftMargin: 10
                 width: 400
                 placeholderText: qsTr("Enter path")
-                text: "D:\\Test\\video\\192.168.100.26_01_0_20170328_105837_1.mp4"
+                text: "file:///D:\\Test\\video\\192.168.100.26_01_0_20170328_105837_1.mp4"
             }
 
             Button{
@@ -302,7 +307,7 @@ Window {
                     // 获取播放状态
                     console.log("state = " + parent.state + " " + Video.Stopped)
 
-                    var fileName = "D:\\Test\\video\\192.168.100.26_01_0_20170328_105837_1.mp4";
+                    var fileName = "file:///D:\\Test\\video\\192.168.100.26_01_0_20170328_105837_1.mp4";
                     // 使用URL直接播放
                     parent.play(videoUrl4.text);
 
@@ -332,6 +337,7 @@ Window {
             }
 
             Button{
+                id: stop4;
                 text:"关闭";
                 width: 40
                 height: 25
@@ -346,24 +352,38 @@ Window {
                     pause4.text = "暂停"
                 }
             }
+
+            Button{
+                text:"全屏";
+                width: 40
+                height: 25
+                anchors.bottom: pause4.bottom
+                anchors.left: stop4.right
+                anchors.leftMargin: 10
+                onClicked: {
+                    rect4.width = win.width;
+                    rect4.height = win.height;
+                }
+            }
+
         }
     }
 
 
 
-    Rectangle {
-        width: 220;
-        height: 220;
-        anchors.bottom: parent.bottom;
-        anchors.right: parent.right;
-        color:"transparent";
+//    Rectangle {
+//        width: 220;
+//        height: 220;
+//        anchors.bottom: parent.bottom;
+//        anchors.right: parent.right;
+//        color:"transparent";
 
-        AnimatedImage {
-            id: animated;
-            anchors.fill: parent;
-            source: "1.gif"
-        }
+//        AnimatedImage {
+//            id: animated;
+//            anchors.fill: parent;
+//            source: "1.gif"
+//        }
 
-    }
+//    }
 
 }

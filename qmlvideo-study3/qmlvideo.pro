@@ -19,18 +19,15 @@ include(qmldeploy.pri)
 HEADERS += \
     qmlvideo.h
 
+    PATH_ROOT = ../lib/VLC/sdk
+    INCLUDEPATH += -L../$${PATH_ROOT}/include
+    LIBS += -L$${PATH_ROOT}/lib -llibvlccore -llibvlc
 
-    INCLUDEPATH += "D:/gitrep/github/QtQmlVideo/Lib/VLC/sdk/include"
-    LIBS += -LD:/gitrep/github/QtQmlVideo/Lib/VLC/sdk/lib/ -llibvlccore -llibvlc
+#    INCLUDEPATH += "D:/gitrep/github/QtQmlVideo/Lib/VLC/sdk/include"
+#    LIBS += -LD:/gitrep/github/QtQmlVideo/qmlvideo-study3/lib/VLC/sdk/lib/ -llibvlccore -llibvlc
 
 
 #    INCLUDEPATH += "D:/gitrep/github/QtQmlVideo/Lib/glew-1.9.0/include"
 #    LIBS += D:/gitrep/github/QtQmlVideo/Lib/glew-1.9.0/lib/glew32.lib
 #    LIBS += opengl32.lib
-
-
-
-
-
-
 
